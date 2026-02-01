@@ -3,104 +3,159 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>בוחן אג'יליות: האם את/ה ממקסם/ת או מסתפק/ת?</title>
+    <title>ממקסמים או מסתפקים? בוחן אג'יליות</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .quiz-container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
-        h1 { color: #2c3e50; text-align: center; font-size: 1.5rem; }
-        .question { margin-bottom: 20px; display: none; }
-        .question.active { display: block; }
-        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
-        button { padding: 12px; border: none; border-radius: 8px; background: #3498db; color: white; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
-        button:hover { background: #2980b9; }
-        .result-card { text-align: center; display: none; }
-        .result-title { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 15px; }
-        .result-desc { line-height: 1.6; color: #34495e; }
-        .progress { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; background: #3498db; width: 0%; transition: width 0.3s; }
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --bg: #f8fafc;
+        }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: #1e293b; }
+        .quiz-container { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 90%; max-width: 600px; }
+        
+        /* Screens */
+        .screen { display: none; }
+        .screen.active { display: block; animation: fadeIn 0.5s; }
+        
+        h1 { color: var(--primary); text-align: center; margin-top: 0; }
+        p.intro { line-height: 1.6; text-align: center; font-size: 1.1rem; }
+        
+        /* Quiz Elements */
+        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 25px; text-align: center; }
+        .options-row { display: flex; justify-content: space-between; margin-top: 30px; gap: 5px; }
+        .opt-btn { flex: 1; padding: 15px 5px; border: 2px solid #e2e8f0; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; font-weight: bold; }
+        .opt-btn:hover { border-color: var(--primary); background: #f5f3ff; }
+        .labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: #64748b; }
+
+        /* Spectrum Visual */
+        .spectrum-container { margin: 30px 0; position: relative; height: 50px; background: linear-gradient(to left, #ef4444, #f59e0b, #10b981); border-radius: 25px; }
+        .marker { position: absolute; top: -10px; width: 4px; height: 70px; background: #1e293b; border-radius: 2px; transition: left 1s ease-out; }
+        .marker::after { content: 'את/ה'; position: absolute; top: -25px; right: -20px; font-weight: bold; width: 40px; }
+        
+        .groups-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; font-size: 0.8rem; text-align: center; }
+        .group { padding: 10px; border-radius: 8px; background: #f1f5f9; }
+        .group.highlight { border: 2px solid var(--primary); background: #eef2ff; }
+
+        button.main-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
 <div class="quiz-container">
-    <div id="quiz-ui">
-        <div class="progress"><div class="progress-bar" id="pb"></div></div>
-        <h1>בוחן אג'יליות</h1>
-        <div id="questions-container"></div>
+    <div id="screen-welcome" class="screen active">
+        <h1>האם את/ה אג'ילי בנשמה?</h1>
+        <p class="intro">
+            בחיים אנחנו מתחלקים לשניים: <b>ממקסמים</b> (אלו שחייבים את האופציה הכי טובה) 
+            ו<b>מסתפקים</b> (אלו שבוחרים במה שעונה על הצורך).
+            <br><br>
+            הבחן הבא יבדוק איפה את/ה על הספקטרום, ואיך זה משפיע על היכולת שלך לעבוד בשיטה אג'ילית.
+        </p>
+        <button class="main-btn" onclick="showScreen('screen-quiz')">בואו נתחיל</button>
     </div>
 
-    <div id="result-ui" class="result-card">
-        <div class="result-title" id="res-title"></div>
-        <div class="result-desc" id="res-desc"></div>
-        <br>
-        <button onclick="location.reload()">נסה שוב</button>
+    <div id="screen-quiz" class="screen">
+        <div id="question-area">
+            <div id="q-count" style="color: #64748b; font-size: 0.9rem; margin-bottom: 10px;">שאלה 1 מתוך 5</div>
+            <div class="question-text" id="q-text"></div>
+            <div class="options-row">
+                <button class="opt-btn" onclick="handleAnswer(1)">1</button>
+                <button class="opt-btn" onclick="handleAnswer(2)">2</button>
+                <button class="opt-btn" onclick="handleAnswer(3)">3</button>
+                <button class="opt-btn" onclick="handleAnswer(4)">4</button>
+                <button class="opt-btn" onclick="handleAnswer(5)">5</button>
+            </div>
+            <div class="labels">
+                <span>בכלל לא מסכימה</span>
+                <span>מסכימה מאוד</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-result" class="screen text-center">
+        <h1>התוצאה שלך</h1>
+        <div class="spectrum-container">
+            <div id="user-marker" class="marker"></div>
+        </div>
+        
+        <div id="result-text" style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 20px;"></div>
+        
+        <div class="groups-info">
+            <div class="group" id="g1"><b>מסתפקים</b><br>מחליטים מהר, משחררים MVP</div>
+            <div class="group" id="g2"><b>מאוזנים</b><br>שואפים לאיכות אך יעילים</div>
+            <div class="group" id="g3"><b>ממקסמים</b><br>מחפשים שלמות, מעכבים שחרור</div>
+        </div>
+
+        <p id="personal-insight" style="line-height: 1.6; margin-top: 20px;"></p>
+        
+        <button class="main-btn" onclick="location.reload()">בדיקה חוזרת</button>
     </div>
 </div>
 
 <script>
     const questions = [
-        "גם כשאני מרוצה מהעבודה שלי, אני תמיד בודקת אפשרויות נוספות בחוץ.",
-        "ברכב, אני מעבירה תחנות רדיו כדי לבדוק אם יש שיר טוב יותר, גם אם השיר הנוכחי נחמד.",
-        "כשאני קונה מתנה לחברים, אני מרגישה שאני חייבת לסרוק את כל החנויות כדי למצוא את הדבר ה'מושלם'.",
-        "בעבודה על פרויקט, קשה לי לשחרר תוצר אם הוא לא 100% מושלם מבחינתי.",
-        "אני מעדיפה לחקור עוד ועוד מידע לפני החלטה, מאשר להחליט מהר ולתקן תוך כדי תנועה."
+        "לא משנה כמה אני מרוצה מהעבודה שלי, הדבר הנכון הוא תמיד לפקוח עיניים לגבי אפשרויות נוספות.",
+        "כשאני באוטו, אבדוק לעיתים קרובות אם יש משהו טוב יותר בתחנה אחרת גם אם השיר הנוכחי נחמד.",
+        "קשה לי מאוד לקנות מתנה לחבר/ה מבלי לסרוק קודם את כל האפשרויות הקיימות בשוק.",
+        "כשאני קונה בגדים, אני מרגישה שאני חייבת למצוא את הדבר המושלם ולא 'סתם משהו נחמד'.",
+        "לפני קבלת החלטה בעבודה, אני מעדיפה לאסוף עוד נתונים כדי לוודא שלא פספסתי את האופציה האידיאלית."
     ];
 
-    let currentStep = 0;
-    let totalScore = 0;
+    let currentQ = 0;
+    let score = 0;
 
-    const container = document.getElementById('questions-container');
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        if(id === 'screen-quiz') updateQuestion();
+    }
 
-    questions.forEach((q, index) => {
-        const div = document.createElement('div');
-        div.className = `question ${index === 0 ? 'active' : ''}`;
-        div.innerHTML = `
-            <p>${q}</p>
-            <div class="options">
-                <button onclick="nextStep(5)">מסכימה מאוד (5)</button>
-                <button onclick="nextStep(3)">ככה-ככה (3)</button>
-                <button onclick="nextStep(1)">בכלל לא (1)</button>
-            </div>
-        `;
-        container.appendChild(div);
-    });
+    function updateQuestion() {
+        document.getElementById('q-count').innerText = `שאלה ${currentQ + 1} מתוך ${questions.length}`;
+        document.getElementById('q-text').innerText = questions[currentQ];
+    }
 
-    function nextStep(score) {
-        totalScore += score;
-        const qs = document.querySelectorAll('.question');
-        qs[currentStep].classList.remove('active');
-        currentStep++;
-        
-        document.getElementById('pb').style.width = (currentStep / questions.length * 100) + '%';
-
-        if (currentStep < questions.length) {
-            qs[currentStep].classList.add('active');
+    function handleAnswer(val) {
+        score += val;
+        currentQ++;
+        if(currentQ < questions.length) {
+            updateQuestion();
         } else {
-            showResult();
+            showResults();
         }
     }
 
-    function showResult() {
-        document.getElementById('quiz-ui').style.display = 'none';
-        const resCard = document.getElementById('result-ui');
-        resCard.style.display = 'block';
+    function showResults() {
+        showScreen('screen-result');
         
-        let title = "";
-        let desc = "";
+        // חישוב מיקום על הספקטרום (5-25)
+        // נהפוך את זה לאחוזים ל-CSS (ימין זה 5, שמאל זה 25)
+        const percent = ((score - 5) / 20) * 100;
+        document.getElementById('user-marker').style.right = percent + '%';
 
-        if (totalScore <= 12) {
-            title = "האג'יליסט הטבעי (Satisficer)";
-            desc = "יש לך את ה-Mindset האג'ילי המושלם! את יודעת מתי משהו 'טוב מספיק' כדי להתקדם. את מעדיפה למידה תוך כדי תנועה על פני תקיעה בשלבי תכנון, מה שמאפשר לך ולצוות שלך לרוץ מהר.";
-        } else if (totalScore <= 19) {
-            title = "הממקסמת המחושבת";
-            desc = "את נמצאת באיזון. את שואפת לאיכות גבוהה אבל יודעת לשים את הגבול כשצריך לחתוך. האתגר שלך הוא לוודא שהצורך ב'עוד קצת בדיקות' לא מעכב את הערך שאת מייצרת.";
+        let title = "";
+        let insight = "";
+        let groupHighlight = "";
+
+        if (score <= 11) {
+            title = "אג'יליסטית בנשמה (Satisficer)";
+            insight = "יש לך נטייה טבעית לאג'יליות. את יודעת לזהות מתי תוצר הוא 'מספיק טוב' כדי להמשיך הלאה. בעולם של חוסר ודאות, היכולת שלך לקבל החלטות מהר היא נכס אסטרטגי.";
+            groupHighlight = "g1";
+        } else if (score <= 18) {
+            title = "מאוזנת ויעילה";
+            insight = "את נמצאת בנקודת האיזון. את מעריכה איכות אבל מבינה את ערך הזמן. את יודעת למקסם כשזה קריטי, ומסוגלת לשחרר כשצריך לרוץ מהר.";
+            groupHighlight = "g2";
         } else {
-            title = "הפרפקציוניסטית (Maximizer)";
-            desc = "השאיפה שלך למצוינות היא כוח, אבל היא האויב של האג'יליות. את משקיעה המון אנרגיה במציאת האופציה המושלמת. הטיפ האג'ילי עבורך: נסי לשחרר גרסה ראשונית (MVP) מוקדם יותר, העולם לא יתמוטט אם זה יהיה רק 80% מושלם!";
+            title = "ממקסמת בנשמה (Maximizer)";
+            insight = "הסטנדרטים שלך גבוהים מאוד, וזה נפלא - אבל באג'יליות זה עלול להיות 'צוואר בקבוק'. נסי לאתגר את עצמך לשחרר גרסאות חלקיות מוקדם יותר. זכרי: Done is better than perfect.";
+            groupHighlight = "g3";
         }
 
-        document.getElementById('res-title').innerText = title;
-        document.getElementById('res-desc').innerText = desc;
+        document.getElementById('result-text').innerText = title;
+        document.getElementById('personal-insight').innerText = insight;
+        document.getElementById(groupHighlight).classList.add('highlight');
     }
 </script>
 </body>
