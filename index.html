@@ -3,41 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ממקסמים או מסתפקים? בוחן אג'יליות</title>
+    <title>בוחן אג'יליות: ממקסמת או מסתפקת?</title>
     <style>
         :root {
             --primary: #4f46e5;
             --secondary: #10b981;
             --accent: #f59e0b;
+            --danger: #ef4444;
             --bg: #f8fafc;
         }
         body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; color: #1e293b; }
         .quiz-container { background: white; padding: 2.5rem; border-radius: 20px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); width: 90%; max-width: 600px; }
         
-        /* Screens */
         .screen { display: none; }
         .screen.active { display: block; animation: fadeIn 0.5s; }
         
-        h1 { color: var(--primary); text-align: center; margin-top: 0; }
-        p.intro { line-height: 1.6; text-align: center; font-size: 1.1rem; }
+        h1 { color: var(--primary); text-align: center; margin-top: 0; font-size: 1.8rem; }
+        p.intro { line-height: 1.6; text-align: center; font-size: 1.1rem; color: #475569; }
         
-        /* Quiz Elements */
-        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 25px; text-align: center; }
-        .options-row { display: flex; justify-content: space-between; margin-top: 30px; gap: 5px; }
-        .opt-btn { flex: 1; padding: 15px 5px; border: 2px solid #e2e8f0; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; font-weight: bold; }
-        .opt-btn:hover { border-color: var(--primary); background: #f5f3ff; }
-        .labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.85rem; color: #64748b; }
+        .question-text { font-size: 1.25rem; font-weight: 600; margin-bottom: 25px; text-align: center; min-height: 3em; display: flex; align-items: center; justify-content: center; }
+        .options-row { display: flex; justify-content: space-between; margin-top: 30px; gap: 8px; }
+        .opt-btn { flex: 1; padding: 15px 0; border: 2px solid #e2e8f0; border-radius: 12px; background: white; cursor: pointer; transition: all 0.2s; font-weight: bold; font-size: 1.1rem; }
+        .opt-btn:hover { border-color: var(--primary); background: #f5f3ff; color: var(--primary); }
+        .labels { display: flex; justify-content: space-between; margin-top: 10px; font-size: 0.9rem; color: #64748b; font-weight: 500; }
 
-        /* Spectrum Visual */
-        .spectrum-container { margin: 30px 0; position: relative; height: 50px; background: linear-gradient(to left, #ef4444, #f59e0b, #10b981); border-radius: 25px; }
-        .marker { position: absolute; top: -10px; width: 4px; height: 70px; background: #1e293b; border-radius: 2px; transition: left 1s ease-out; }
-        .marker::after { content: 'את/ה'; position: absolute; top: -25px; right: -20px; font-weight: bold; width: 40px; }
+        .spectrum-wrapper { margin: 40px 0 20px 0; position: relative; }
+        .spectrum-container { height: 20px; background: linear-gradient(to left, var(--danger), var(--accent), var(--secondary)); border-radius: 10px; position: relative; }
+        .marker { position: absolute; top: -15px; width: 4px; height: 50px; background: #1e293b; border-radius: 2px; transition: right 1s ease-out; }
+        .marker::after { content: 'את/ה'; position: absolute; top: -25px; right: -18px; font-weight: bold; font-size: 0.8rem; width: 40px; text-align: center; }
         
-        .groups-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; font-size: 0.8rem; text-align: center; }
-        .group { padding: 10px; border-radius: 8px; background: #f1f5f9; }
-        .group.highlight { border: 2px solid var(--primary); background: #eef2ff; }
+        .groups-info { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 30px; }
+        .group { padding: 12px; border-radius: 10px; background: #f1f5f9; font-size: 0.85rem; text-align: center; border: 2px solid transparent; }
+        .group b { display: block; margin-bottom: 5px; color: var(--primary); }
+        .group.highlight { border-color: var(--primary); background: #eef2ff; transform: scale(1.05); transition: 0.3s; }
 
-        button.main-btn { width: 100%; padding: 15px; border: none; border-radius: 12px; background: var(--primary); color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        button.main-btn { width: 100%; padding: 16px; border: none; border-radius: 12px; background: var(--primary); color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; margin-top: 25px; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.4); }
+        button.main-btn:hover { background: #4338ca; }
         
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -46,19 +47,18 @@
 
 <div class="quiz-container">
     <div id="screen-welcome" class="screen active">
-        <h1>האם את/ה אג'ילי בנשמה?</h1>
+        <h1>ממקסמת או מסתפקת?</h1>
         <p class="intro">
-            בחיים אנחנו מתחלקים לשניים: <b>ממקסמים</b> (אלו שחייבים את האופציה הכי טובה) 
-            ו<b>מסתפקים</b> (אלו שבוחרים במה שעונה על הצורך).
+            האם השאיפה שלך למושלם עוצרת אותך מלהיות אג'ילית? 
             <br><br>
-            הבחן הבא יבדוק איפה את/ה על הספקטרום, ואיך זה משפיע על היכולת שלך לעבוד בשיטה אג'ילית.
+            בואי נגלה איפה את נמצאת על הספקטרום שבין <b>הממקסמים</b> (אלו שחייבים את הכי טוב) לבין <b>המסתפקים</b> (אלו שבוחרים במה שפותר את הבעיה).
         </p>
-        <button class="main-btn" onclick="showScreen('screen-quiz')">בואו נתחיל</button>
+        <button class="main-btn" onclick="showScreen('screen-quiz')">התחילי בבוחן</button>
     </div>
 
     <div id="screen-quiz" class="screen">
         <div id="question-area">
-            <div id="q-count" style="color: #64748b; font-size: 0.9rem; margin-bottom: 10px;">שאלה 1 מתוך 5</div>
+            <div id="q-count" style="color: #64748b; font-size: 0.9rem; margin-bottom: 10px; text-align: center;">שאלה 1 מתוך 7</div>
             <div class="question-text" id="q-text"></div>
             <div class="options-row">
                 <button class="opt-btn" onclick="handleAnswer(1)">1</button>
@@ -68,27 +68,34 @@
                 <button class="opt-btn" onclick="handleAnswer(5)">5</button>
             </div>
             <div class="labels">
-                <span>בכלל לא מסכימה</span>
+                <span>כלל לא מסכימה</span>
                 <span>מסכימה מאוד</span>
             </div>
         </div>
     </div>
 
-    <div id="screen-result" class="screen text-center">
+    <div id="screen-result" class="screen">
         <h1>התוצאה שלך</h1>
-        <div class="spectrum-container">
-            <div id="user-marker" class="marker"></div>
+        
+        <div class="spectrum-wrapper">
+            <div class="spectrum-container">
+                <div id="user-marker" class="marker"></div>
+            </div>
+            <div class="labels" style="margin-top: 15px;">
+                <span style="color: var(--secondary); font-weight: bold;">מסתפקת</span>
+                <span style="color: var(--danger); font-weight: bold;">ממקסמת</span>
+            </div>
         </div>
         
-        <div id="result-text" style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 20px;"></div>
+        <div id="result-title" style="font-size: 1.4rem; font-weight: bold; text-align: center; margin: 20px 0; color: var(--primary);"></div>
         
         <div class="groups-info">
-            <div class="group" id="g1"><b>מסתפקים</b><br>מחליטים מהר, משחררים MVP</div>
-            <div class="group" id="g2"><b>מאוזנים</b><br>שואפים לאיכות אך יעילים</div>
-            <div class="group" id="g3"><b>ממקסמים</b><br>מחפשים שלמות, מעכבים שחרור</div>
+            <div class="group" id="g1"><b>מסתפקת</b>מחליטה מהר, משחררת MVP, לומדת מהשטח.</div>
+            <div class="group" id="g2"><b>מאוזנת</b>שואפת לאיכות, אך יודעת לחתוך כשצריך להתקדם.</div>
+            <div class="group" id="g3"><b>ממקסמת</b>חוקרת לעומק, מתקשה לשחרר מוצר לא מושלם.</div>
         </div>
 
-        <p id="personal-insight" style="line-height: 1.6; margin-top: 20px;"></p>
+        <p id="personal-insight" style="line-height: 1.6; margin-top: 25px; padding: 15px; background: #f8fafc; border-right: 4px solid var(--primary); border-radius: 4px;"></p>
         
         <button class="main-btn" onclick="location.reload()">בדיקה חוזרת</button>
     </div>
@@ -98,9 +105,11 @@
     const questions = [
         "לא משנה כמה אני מרוצה מהעבודה שלי, הדבר הנכון הוא תמיד לפקוח עיניים לגבי אפשרויות נוספות.",
         "כשאני באוטו, אבדוק לעיתים קרובות אם יש משהו טוב יותר בתחנה אחרת גם אם השיר הנוכחי נחמד.",
-        "קשה לי מאוד לקנות מתנה לחבר/ה מבלי לסרוק קודם את כל האפשרויות הקיימות בשוק.",
+        "קשה לי מאוד לקנות מתנה לחבר/ה מבלי לסרוק קודם את כל האפשרויות הקיימות.",
         "כשאני קונה בגדים, אני מרגישה שאני חייבת למצוא את הדבר המושלם ולא 'סתם משהו נחמד'.",
-        "לפני קבלת החלטה בעבודה, אני מעדיפה לאסוף עוד נתונים כדי לוודא שלא פספסתי את האופציה האידיאלית."
+        "לפני קבלת החלטה בעבודה, אני מעדיפה לאסוף עוד נתונים כדי לוודא שלא פספסתי את האופציה האידיאלית.",
+        "גם אחרי שקיבלתי החלטה, אני מוצאת את עצמי תוהה האם אופציה אחרת הייתה טובה יותר.",
+        "אני מוכנה להשקיע הרבה יותר זמן בחיפוש, רק כדי להיות בטוחה שלא התפשרתי על פחות מהטוב ביותר."
     ];
 
     let currentQ = 0;
@@ -130,30 +139,30 @@
     function showResults() {
         showScreen('screen-result');
         
-        // חישוב מיקום על הספקטרום (5-25)
-        // נהפוך את זה לאחוזים ל-CSS (ימין זה 5, שמאל זה 25)
-        const percent = ((score - 5) / 20) * 100;
+        // סקאלה בין 7 ל-35. נחשב אחוזים.
+        const percent = ((score - 7) / 28) * 100;
+        // בגלל RTL, ככל שהציון גבוה (ממקסם) המרקר צריך להיות יותר בצד שמאל (אדום)
         document.getElementById('user-marker').style.right = percent + '%';
 
         let title = "";
         let insight = "";
         let groupHighlight = "";
 
-        if (score <= 11) {
+        if (score <= 16) {
             title = "אג'יליסטית בנשמה (Satisficer)";
-            insight = "יש לך נטייה טבעית לאג'יליות. את יודעת לזהות מתי תוצר הוא 'מספיק טוב' כדי להמשיך הלאה. בעולם של חוסר ודאות, היכולת שלך לקבל החלטות מהר היא נכס אסטרטגי.";
             groupHighlight = "g1";
-        } else if (score <= 18) {
+            insight = "יש לך את ה-Mindset האידיאלי לאג'יליות. את מבינה ש'הטוב מאוד הוא האויב של הטוב מספיק'. היכולת שלך לקבל החלטות על בסיס מידע חלקי ולשפר תוך כדי תנועה מאפשרת לך ולצוות שלך לשמור על קצב מהיר ולמידה מתמדת.";
+        } else if (score <= 26) {
             title = "מאוזנת ויעילה";
-            insight = "את נמצאת בנקודת האיזון. את מעריכה איכות אבל מבינה את ערך הזמן. את יודעת למקסם כשזה קריטי, ומסוגלת לשחרר כשצריך לרוץ מהר.";
             groupHighlight = "g2";
+            insight = "את נמצאת בנקודת האיזון. את שואפת לאיכות גבוהה אבל מבינה את ערך הזמן. האתגר האג'ילי שלך הוא לזהות את המקומות שבהם הפרפקציוניזם משתלט, ולדעת 'לחתוך' כדי לאפשר למידה מוקדמת מהשטח.";
         } else {
             title = "ממקסמת בנשמה (Maximizer)";
-            insight = "הסטנדרטים שלך גבוהים מאוד, וזה נפלא - אבל באג'יליות זה עלול להיות 'צוואר בקבוק'. נסי לאתגר את עצמך לשחרר גרסאות חלקיות מוקדם יותר. זכרי: Done is better than perfect.";
             groupHighlight = "g3";
+            insight = "השאיפה שלך למצוינות היא כוח אדיר, אך באג'יליות היא עלולה להפוך למכשול. הצורך בביטחון מוחלט לפני החלטה מעכב את ה-Time to Market. נסי לאמץ את תפיסת ה-MVP: שחררי תוצר 'עובד' מוקדם יותר, והשתמשי בפידבק כדי להגיע לשלמות שאת מחפשת.";
         }
 
-        document.getElementById('result-text').innerText = title;
+        document.getElementById('result-title').innerText = title;
         document.getElementById('personal-insight').innerText = insight;
         document.getElementById(groupHighlight).classList.add('highlight');
     }
