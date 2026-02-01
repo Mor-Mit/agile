@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>בוחן אג'יליות: האם את/ה ממקסם/ת או מסתפק/ת?</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .quiz-container { background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 500px; }
+        h1 { color: #2c3e50; text-align: center; font-size: 1.5rem; }
+        .question { margin-bottom: 20px; display: none; }
+        .question.active { display: block; }
+        .options { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        button { padding: 12px; border: none; border-radius: 8px; background: #3498db; color: white; cursor: pointer; font-size: 1rem; transition: background 0.3s; }
+        button:hover { background: #2980b9; }
+        .result-card { text-align: center; display: none; }
+        .result-title { font-size: 1.8rem; font-weight: bold; color: #27ae60; margin-bottom: 15px; }
+        .result-desc { line-height: 1.6; color: #34495e; }
+        .progress { height: 8px; background: #eee; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar { height: 100%; background: #3498db; width: 0%; transition: width 0.3s; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="quiz-ui">
+        <div class="progress"><div class="progress-bar" id="pb"></div></div>
+        <h1>בוחן אג'יליות</h1>
+        <div id="questions-container"></div>
+    </div>
+
+    <div id="result-ui" class="result-card">
+        <div class="result-title" id="res-title"></div>
+        <div class="result-desc" id="res-desc"></div>
+        <br>
+        <button onclick="location.reload()">נסה שוב</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        "גם כשאני מרוצה מהעבודה שלי, אני תמיד בודקת אפשרויות נוספות בחוץ.",
+        "ברכב, אני מעבירה תחנות רדיו כדי לבדוק אם יש שיר טוב יותר, גם אם השיר הנוכחי נחמד.",
+        "כשאני קונה מתנה לחברים, אני מרגישה שאני חייבת לסרוק את כל החנויות כדי למצוא את הדבר ה'מושלם'.",
+        "בעבודה על פרויקט, קשה לי לשחרר תוצר אם הוא לא 100% מושלם מבחינתי.",
+        "אני מעדיפה לחקור עוד ועוד מידע לפני החלטה, מאשר להחליט מהר ולתקן תוך כדי תנועה."
+    ];
+
+    let currentStep = 0;
+    let totalScore = 0;
+
+    const container = document.getElementById('questions-container');
+
+    questions.forEach((q, index) => {
+        const div = document.createElement('div');
+        div.className = `question ${index === 0 ? 'active' : ''}`;
+        div.innerHTML = `
+            <p>${q}</p>
+            <div class="options">
+                <button onclick="nextStep(5)">מסכימה מאוד (5)</button>
+                <button onclick="nextStep(3)">ככה-ככה (3)</button>
+                <button onclick="nextStep(1)">בכלל לא (1)</button>
+            </div>
+        `;
+        container.appendChild(div);
+    });
+
+    function nextStep(score) {
+        totalScore += score;
+        const qs = document.querySelectorAll('.question');
+        qs[currentStep].classList.remove('active');
+        currentStep++;
+        
+        document.getElementById('pb').style.width = (currentStep / questions.length * 100) + '%';
+
+        if (currentStep < questions.length) {
+            qs[currentStep].classList.add('active');
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById('quiz-ui').style.display = 'none';
+        const resCard = document.getElementById('result-ui');
+        resCard.style.display = 'block';
+        
+        let title = "";
+        let desc = "";
+
+        if (totalScore <= 12) {
+            title = "האג'יליסט הטבעי (Satisficer)";
+            desc = "יש לך את ה-Mindset האג'ילי המושלם! את יודעת מתי משהו 'טוב מספיק' כדי להתקדם. את מעדיפה למידה תוך כדי תנועה על פני תקיעה בשלבי תכנון, מה שמאפשר לך ולצוות שלך לרוץ מהר.";
+        } else if (totalScore <= 19) {
+            title = "הממקסמת המחושבת";
+            desc = "את נמצאת באיזון. את שואפת לאיכות גבוהה אבל יודעת לשים את הגבול כשצריך לחתוך. האתגר שלך הוא לוודא שהצורך ב'עוד קצת בדיקות' לא מעכב את הערך שאת מייצרת.";
+        } else {
+            title = "הפרפקציוניסטית (Maximizer)";
+            desc = "השאיפה שלך למצוינות היא כוח, אבל היא האויב של האג'יליות. את משקיעה המון אנרגיה במציאת האופציה המושלמת. הטיפ האג'ילי עבורך: נסי לשחרר גרסה ראשונית (MVP) מוקדם יותר, העולם לא יתמוטט אם זה יהיה רק 80% מושלם!";
+        }
+
+        document.getElementById('res-title').innerText = title;
+        document.getElementById('res-desc').innerText = desc;
+    }
+</script>
+</body>
+</html>
